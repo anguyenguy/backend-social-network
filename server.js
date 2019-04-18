@@ -5,45 +5,51 @@ const mongoose = require('mongoose');
 const register = require('./database/controllers/register');
 const signin = require("./database/controllers/signin");
 
-
 const app = express();
 
+// DATABASE
+// Connect to database use mongoDB
+mongoose.connect('mongodb://localhost/socialnetwork');
+// Check db connection
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // we're connected!
+  console.log("Okay :) You are in connection!");
+});
 
-//Thiết lập một kết nối mongoose mặc định
-    const mongoDB = 'mongodb://127.0.0.1/socialnetwork';
-    mongoose.connect(mongoDB);
-    mongoose.connection.once('open',function(){
-        console.log("Connection has been made, now make fireworks...");
-    }).then(()=>{
-        mongoose.Promise = global.Promise;
-        //Lấy kết nối mặc định
-        next();
-    });
-    const db = mongoose.connection;
-    // register();
-    signin();
-
-    
-
+// Try to read data and through security 
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
+app.use(cors()); 
 
 
+// When a user signs in 
+// app.post('/',(req, res) =>{   
+//     const data = req.body;
+//     const emailT = data.email;
+//     const passwordT = data.password;
 
-// app.use(bodyParser.urlencoded({extended:false}));
-// app.use(bodyParser.json());
-// app.use(cors());
-
-// app.post('/',(req, res) =>{
-//     console.log('There is a stranger')
-//     console.log(req.body);
-//     if(req.body.user.email===database.users[0].email
-//         && req.body.user.password === database.users[0].password
-//         ){
-//             res.json('success');
-//     }else{
-//         res.status(400).json('Error');
-//     }
-
-    
+//     signin(emailT,passwordT,)
 // })
 
-app.listen(3000);
+// Register for user
+app.post('/',(req, res) => {
+    const data = req.body;
+
+    // Check when user register new account
+    if(data.type==="resgister"){
+        register(data);
+    }
+    
+    // Check when user sign in
+    if(data.type==="signin"){
+        signin(data);
+    } 
+    
+})
+
+
+app.listen(3000, ()=>{
+    console.log('app is running on port 3000')
+});

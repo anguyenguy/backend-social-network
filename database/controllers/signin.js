@@ -1,17 +1,15 @@
 const User = require("../models/user");
 
-const signin = function(){
-            const email = "rocketguy@nguyenquan.net";
-            const password = "quan1997"; 
-
+const signin = function(data){
+            const email = data.email;
+            const password = data.password; 
 
             User.findOne({email:email}).then(function(record){
                 if(record.password===password){
                     console.log("Correctly");
                 }else{
-                    console.log("Empty");
+                    console.log("Check your account again!");
                 }
-            
             });
 } 
 
